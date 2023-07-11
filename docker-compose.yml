@@ -1,0 +1,31 @@
+version: "3.9"
+name: pack
+services:
+
+  jupyter:
+    build:
+      context: .
+    volumes:
+      - $MOUNT_PATH:/app
+      - $MODEL_PATH:/app/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    user: root
+    command: |
+      bash -cx "
+      jupyter contrib nbextension install --user &&
+      jupyter nbextensions_configurator enable --user &&
+      jt -t monokai -T -N -kl &&
+      jupyter lab --ip 0.0.0.0 --LabApp.token='' --no-browser --allow-root
+      "
+
+    ports:
+      - 8888:8888
+
+
+      
